@@ -1,23 +1,8 @@
+mod canvas;
+
+use crate::canvas::Canvas;
 use std::io;
 use std::io::Write;
-
-struct Canvas {
-    data: Vec<Vec<char>>,
-}
-
-impl Canvas {
-    fn new(rows: usize, cols: usize) -> Canvas {
-        let mut v = vec![vec![' '; cols]; rows];
-        v[0][0] = '1';
-        Canvas { data: v }
-    }
-    fn get(&self, x: usize, y: usize) -> char {
-        self.data[x][y]
-    }
-    fn set(&mut self, x: usize, y: usize, ch: char) {
-        self.data[x][y] = ch;
-    }
-}
 
 #[derive(PartialEq, PartialOrd, Eq, Ord, Debug, Hash)]
 enum Command {
@@ -52,6 +37,7 @@ fn main() -> io::Result<()> {
     println!("drawerus");
     println!("");
     println!("Commands:");
+    let mut canvas = Canvas::new(20, 10);
     loop {
         print!("> ");
         io::stdout().flush()?;
@@ -61,12 +47,18 @@ fn main() -> io::Result<()> {
                 println!("{} bytes read", _n);
                 println!("{}", input);
                 let cmd = parse(input);
+                if cmd.is_err() {
+                    println!("Invalid command.");
+                    continue;
+                }
                 println!("READ: {:?}", cmd);
                 match cmd.unwrap() {
-                    Command::Line { x1, y1, x2, y2 } => continue,
+                    Command::Line { x1, y1, x2, y2 } => canvas.set(3, 3, '*'),
                     Command::Rect { x1, y1, x2, y2 } => continue,
                     Command::Circ { x, y, r } => continue,
-                    Command::Canv { width, height } => continue,
+                    Command::Canv { width, height } => {
+                        canvas = Canvas::new(width, height);
+                    }
                     Command::Char(ch) => continue,
                     Command::Read(filename) => continue,
                     Command::Save(filename) => continue,
