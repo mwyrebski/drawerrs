@@ -4,7 +4,11 @@ mod command;
 use crate::canvas::Canvas;
 use crate::canvas::Point;
 use crate::command::Command;
+use std::env;
+use std::fs;
 use std::io;
+use std::io::BufRead;
+use std::io::BufReader;
 use std::io::Write;
 
 fn main() -> io::Result<()> {
@@ -13,11 +17,24 @@ fn main() -> io::Result<()> {
     println!("Commands:");
     let mut canvas = Canvas::new(20, 10);
     let mut setchar = '*';
+    let args: Vec<String> = env::args().skip(1).collect();
+    let mut reader: Box<dyn BufRead> = {
+        match (args.get(0), args.get(1)) {
+            (Some(opt), Some(filename)) if opt == "-r" => {
+                Box::new(BufReader::new(fs::File::open(filename).unwrap()))
+            }
+            _ => Box::new(BufReader::new(io::stdin())),
+        }
+    };
+
     loop {
         print!("> ");
         io::stdout().flush()?;
 
-        if let Ok(cmd) = Command::from(read_line()) {
+        let mut line = String::new();
+        reader.read_line(&mut line).unwrap();
+
+        if let Ok(cmd) = Command::from(line) {
             match cmd {
                 Command::Line { from, to } => {
                     let Point(x1, y1) = from;
@@ -93,10 +110,4 @@ fn main() -> io::Result<()> {
         }
     }
     Ok(())
-}
-
-fn read_line() -> String {
-    let mut line = String::new();
-    io::stdin().read_line(&mut line).unwrap();
-    line
 }
