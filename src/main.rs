@@ -2,6 +2,7 @@ mod canvas;
 mod command;
 
 use crate::canvas::Canvas;
+use crate::canvas::Point;
 use crate::command::Command;
 use std::io;
 use std::io::Write;
@@ -18,17 +19,17 @@ fn main() -> io::Result<()> {
 
         if let Ok(cmd) = Command::from(read_line()) {
             match cmd {
-                Command::Line { x1, y1, x2, y2 } => {
-                    let fx1 = x1 as f64;
-                    let fy1 = y1 as f64;
-                    let fx2 = x2 as f64;
-                    let fy2 = y2 as f64;
+                Command::Line { from, to } => {
+                    let Point(x1, y1) = from;
+                    let Point(x2, y2) = to;
+                    let (fx1, fy1) = from.as_f64();
+                    let (fx2, fy2) = to.as_f64();
                     let m = (fy2 - fy1) / (fx2 - fx1);
 
                     let form = |x, y| y as f64 - fy1 == m * (x as f64 - fx1);
 
-                    canvas.set(x1, y1, setchar);
-                    canvas.set(x2, y2, setchar);
+                    canvas.setp(from, setchar);
+                    canvas.setp(to, setchar);
                     for x in x1..=x2 {
                         for y in y1..=y2 {
                             if form(x, y) {
@@ -37,7 +38,9 @@ fn main() -> io::Result<()> {
                         }
                     }
                 }
-                Command::Rect { x1, y1, x2, y2 } => {
+                Command::Rect { p1, p2 } => {
+                    let Point(x1, y1) = p1;
+                    let Point(x2, y2) = p2;
                     for x in x1..=x2 {
                         for y in y1..=y2 {
                             if x == x1 || x == x2 || y == y1 || y == y2 {
@@ -46,7 +49,8 @@ fn main() -> io::Result<()> {
                         }
                     }
                 }
-                Command::Circ { x, y, r } => {
+                Command::Circ { p, r } => {
+                    let Point(x, y) = p;
                     let fr = r as f64;
                     let circle = |x, y| {
                         let fx = x as f64 - fr / 2.0;

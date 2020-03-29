@@ -31,11 +31,23 @@ impl Canvas {
     pub fn set(&mut self, x: usize, y: usize, ch: char) {
         self.data[y][x] = ch;
     }
+    pub fn setp(&mut self, p: Point, ch: char) {
+        self.data[p.1][p.0] = ch;
+    }
     pub fn width(&self) -> usize {
         self.width
     }
     pub fn height(&self) -> usize {
         self.height
+    }
+}
+
+#[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Debug, Hash)]
+pub struct Point(pub usize, pub usize);
+
+impl Point {
+    pub fn as_f64(self) -> (f64, f64) {
+        (self.0 as f64, self.1 as f64)
     }
 }
 
