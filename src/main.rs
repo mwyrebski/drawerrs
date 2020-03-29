@@ -30,6 +30,7 @@ enum Command {
     Char(char),
     Read(String),
     Save(String),
+    Show,
     Quit,
 }
 
@@ -42,6 +43,7 @@ fn main() -> io::Result<()> {
         print!("> ");
         io::stdout().flush()?;
         let mut input = String::new();
+        let mut setchar = '*';
         match io::stdin().read_line(&mut input) {
             Ok(_n) => {
                 println!("{} bytes read", _n);
@@ -53,15 +55,50 @@ fn main() -> io::Result<()> {
                 }
                 println!("READ: {:?}", cmd);
                 match cmd.unwrap() {
-                    Command::Line { x1, y1, x2, y2 } => canvas.set(3, 3, '*'),
-                    Command::Rect { x1, y1, x2, y2 } => continue,
+                    Command::Line { x1, y1, x2, y2 } => {
+                        let fx1 = x1 as f64;
+                        let fy1 = y1 as f64;
+                        let fx2 = x2 as f64;
+                        let fy2 = y2 as f64;
+                        let m = (fy2 - fy1) / (fx2 - fx1);
+
+                        let form = |x, y| y as f64 - fy1 == m * (x as f64 - fx1);
+
+                        canvas.set(x1, y1, setchar);
+                        canvas.set(x2, y2, setchar);
+                        for x in x1..=x2 {
+                            for y in y1..=y2 {
+                                if form(x, y) {
+                                    canvas.set(x, y, setchar);
+                                }
+                            }
+                        }
+                    }
+                    Command::Rect { x1, y1, x2, y2 } => {
+                        for x in x1..=x2 {
+                            for y in y1..=y2 {
+                                if x == x1 || x == x2 || y == y1 || y == y2 {
+                                    canvas.set(x, y, setchar);
+                                }
+                            }
+                        }
+                    }
                     Command::Circ { x, y, r } => continue,
                     Command::Canv { width, height } => {
                         canvas = Canvas::new(width, height);
+                        println!("New canvas size {}x{}", width, height);
                     }
-                    Command::Char(ch) => continue,
+                    Command::Char(ch) => {
+                        setchar = ch;
+                        println!("Will use new char '{}'", setchar);
+                    }
                     Command::Read(filename) => continue,
-                    Command::Save(filename) => continue,
+                    Command::Save(filename) => {
+                        std::fs::write(filename, canvas.to_string())?;
+                    }
+                    Command::Show => {
+                        print!("{}", canvas);
+                    }
                     Command::Quit => {
                         println!("Quitting...");
                         break;
@@ -128,6 +165,7 @@ fn parse(input: String) -> Result<Command, String> {
         }
         ["READ", filename] => Command::Read(filename.to_string()),
         ["SAVE", filename] => Command::Save(filename.to_string()),
+        ["SHOW"] => Command::Show,
         ["QUIT"] => Command::Quit,
         _ => return Err(arg_err()),
     };
@@ -199,7 +237,6 @@ mod tests {
             ("FileName", " READ FileName"),
             ("File_NAME", "Read \tFile_NAME \n"),
         ] {
-            println!("{:?}", input);
             let expected = Command::Read(input.0.to_string());
             let cmd = parse(input.1.to_string()).unwrap();
             assert_eq!(expected, cmd);
@@ -212,16 +249,22 @@ mod tests {
             ("FileName", " SAVE FileName"),
             ("File_NAME", "Save \tFile_NAME \n"),
         ] {
-            println!("{:?}", input);
             let expected = Command::Save(input.0.to_string());
             let cmd = parse(input.1.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
     }
     #[test]
+    fn show_is_parsed() {
+        for input in &["show", " \nSHOW ", "  Show\t\n"] {
+            let expected = Command::Show;
+            let cmd = parse(input.to_string()).unwrap();
+            assert_eq!(expected, cmd);
+        }
+    }
+    #[test]
     fn quit_is_parsed() {
         for input in &["quit", " \tQUIT ", "  Quit\t\n"] {
-            println!("{:?}", input);
             let expected = Command::Quit;
             let cmd = parse(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
