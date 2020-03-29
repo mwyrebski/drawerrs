@@ -33,6 +33,10 @@ fn main() -> io::Result<()> {
 
         let mut line = String::new();
         reader.read_line(&mut line).unwrap();
+        if line.is_empty() {
+            println!("EOF. Quitting");
+            break;
+        }
 
         if let Ok(cmd) = Command::from(line) {
             match cmd {
