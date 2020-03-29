@@ -84,15 +84,16 @@ fn main() -> io::Result<()> {
                         }
                     }
                     Command::Circ { x, y, r } => {
-                        let fx = x as f64;
-                        let fy = y as f64;
                         let fr = r as f64;
+                        let circle = |x, y| {
+                            let fx = x as f64 - fr / 2.0;
+                            let fy = y as f64 - fr / 2.0;
+                            let dist = ((fx - fr).powi(2) + (fy - fr).powi(2)).sqrt();
+                            dist > fr - 0.5 && dist < fr + 0.5
+                        };
 
-                        let circle =
-                            |x, y| (x as f64 - fx).powi(2) + (y as f64 - fy).powi(2) == fr.powi(2);
-
-                        for x in x - r..=x + r {
-                            for y in y - r..=y + r {
+                        for x in x - r - 1..=x + r + 1 {
+                            for y in y - r - 1..=y + r + 1 {
                                 if circle(x, y) {
                                     canvas.set(x, y, setchar);
                                 }
