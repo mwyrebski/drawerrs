@@ -40,6 +40,9 @@ impl Canvas {
     pub fn height(&self) -> usize {
         self.height
     }
+    pub fn info(&self) -> String {
+        format!("Canvas size: {}x{}", self.width, self.height)
+    }
 }
 
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Debug, Hash)]

@@ -9,6 +9,7 @@ pub enum Command {
     Char(char),
     Read(String),
     Save(String),
+    Info,
     Show,
     Quit,
 }
@@ -70,6 +71,7 @@ impl Command {
             }
             ["READ", filename] => Command::Read(filename.to_string()),
             ["SAVE", filename] => Command::Save(filename.to_string()),
+            ["INFO"] => Command::Info,
             ["SHOW"] => Command::Show,
             ["QUIT"] => Command::Quit,
             _ => return Err(arg_err()),
@@ -155,6 +157,14 @@ mod tests {
         ] {
             let expected = Command::Save(input.0.to_string());
             let cmd = Command::from(input.1.to_string()).unwrap();
+            assert_eq!(expected, cmd);
+        }
+    }
+    #[test]
+    fn info_is_parsed() {
+        for input in &["info", " \nINFO ", "  Info\t\n"] {
+            let expected = Command::Info;
+            let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
     }

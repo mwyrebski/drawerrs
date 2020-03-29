@@ -79,6 +79,7 @@ fn main() -> io::Result<()> {
                 Command::Save(filename) => {
                     std::fs::write(filename, canvas.to_string())?;
                 }
+                Command::Info => println!("{}", canvas.info()),
                 Command::Show => {
                     print!("{}", canvas);
                 }
