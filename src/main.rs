@@ -83,7 +83,22 @@ fn main() -> io::Result<()> {
                             }
                         }
                     }
-                    Command::Circ { x, y, r } => continue,
+                    Command::Circ { x, y, r } => {
+                        let fx = x as f64;
+                        let fy = y as f64;
+                        let fr = r as f64;
+
+                        let circle =
+                            |x, y| (x as f64 - fx).powi(2) + (y as f64 - fy).powi(2) == fr.powi(2);
+
+                        for x in x - r..=x + r {
+                            for y in y - r..=y + r {
+                                if circle(x, y) {
+                                    canvas.set(x, y, setchar);
+                                }
+                            }
+                        }
+                    }
                     Command::Canv { width, height } => {
                         canvas = Canvas::new(width, height);
                         println!("New canvas size {}x{}", width, height);
