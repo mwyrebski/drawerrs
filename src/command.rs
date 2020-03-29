@@ -29,7 +29,7 @@ pub enum Command {
 }
 
 impl Command {
-    pub fn parse(input: String) -> Result<Command, String> {
+    pub fn from(input: String) -> Result<Command, String> {
         let arg_err = || String::default();
         let split: Vec<String> = input
             .trim()
@@ -100,7 +100,7 @@ mod tests {
             y2: 4,
         };
         for input in &["line\t1 2 3 4", "LINE 1 2 3 4", "Line  1  2  3\t4\n"] {
-            let cmd = Command::parse(input.to_string()).unwrap();
+            let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
     }
@@ -113,7 +113,7 @@ mod tests {
             y2: 4,
         };
         for input in &["rect\t1 2 3 4", "RECT 1 2 3 4", "Rect  1  2  3\t4\n"] {
-            let cmd = Command::parse(input.to_string()).unwrap();
+            let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
     }
@@ -121,7 +121,7 @@ mod tests {
     fn circ_is_parsed() {
         let expected = Command::Circ { x: 1, y: 2, r: 3 };
         for input in &["circ\t1 2 3 ", " CIRC 1 2 3 ", "Circ  1  2  \t3\n"] {
-            let cmd = Command::parse(input.to_string()).unwrap();
+            let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
     }
@@ -132,7 +132,7 @@ mod tests {
             height: 200,
         };
         for input in &["canv\t100 200 ", " CANV 100 200", "Canv  100  \t200 \n"] {
-            let cmd = Command::parse(input.to_string()).unwrap();
+            let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
     }
@@ -140,7 +140,7 @@ mod tests {
     fn char_is_parsed() {
         let expected = Command::Char('*');
         for input in &["char\t* ", " CHAR *", "Char \t* \n"] {
-            let cmd = Command::parse(input.to_string()).unwrap();
+            let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
     }
@@ -152,7 +152,7 @@ mod tests {
             ("File_NAME", "Read \tFile_NAME \n"),
         ] {
             let expected = Command::Read(input.0.to_string());
-            let cmd = Command::parse(input.1.to_string()).unwrap();
+            let cmd = Command::from(input.1.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
     }
@@ -164,7 +164,7 @@ mod tests {
             ("File_NAME", "Save \tFile_NAME \n"),
         ] {
             let expected = Command::Save(input.0.to_string());
-            let cmd = Command::parse(input.1.to_string()).unwrap();
+            let cmd = Command::from(input.1.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
     }
@@ -172,7 +172,7 @@ mod tests {
     fn show_is_parsed() {
         for input in &["show", " \nSHOW ", "  Show\t\n"] {
             let expected = Command::Show;
-            let cmd = Command::parse(input.to_string()).unwrap();
+            let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
     }
@@ -180,7 +180,7 @@ mod tests {
     fn quit_is_parsed() {
         for input in &["quit", " \tQUIT ", "  Quit\t\n"] {
             let expected = Command::Quit;
-            let cmd = Command::parse(input.to_string()).unwrap();
+            let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
     }
