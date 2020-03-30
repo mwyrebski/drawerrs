@@ -14,7 +14,7 @@ use std::io::Write;
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 fn main() -> io::Result<()> {
-    println!("drawer.rs {}", VERSION);
+    println!("drawerrs {}", VERSION);
     println!("");
     let mut canvas = Canvas::new(20, 10);
     let mut setchar = '*';
