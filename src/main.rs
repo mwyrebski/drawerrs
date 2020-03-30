@@ -12,7 +12,7 @@ use std::io::BufReader;
 use std::io::Write;
 
 fn main() -> io::Result<()> {
-    println!("drawerus");
+    println!("drawer.rs");
     println!("");
     println!("Commands:");
     let mut canvas = Canvas::new(20, 10);
