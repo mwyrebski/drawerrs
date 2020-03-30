@@ -11,10 +11,11 @@ use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
 
+const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+
 fn main() -> io::Result<()> {
-    println!("drawer.rs");
+    println!("drawer.rs {}", VERSION);
     println!("");
-    println!("Commands:");
     let mut canvas = Canvas::new(20, 10);
     let mut setchar = '*';
     let args: Vec<String> = env::args().skip(1).collect();
