@@ -97,7 +97,7 @@ fn main() -> io::Result<()> {
                     setchar = ch;
                     println!("Will use new char '{}'", setchar);
                 }
-                Command::Read(filename) => {}
+                Command::Read(_filename) => {}
                 Command::Save(filename) => {
                     std::fs::write(filename, canvas.to_string())?;
                 }

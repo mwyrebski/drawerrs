@@ -25,20 +25,11 @@ impl Canvas {
             data,
         }
     }
-    pub fn get(&self, x: usize, y: usize) -> char {
-        self.data[y][x]
-    }
     pub fn set(&mut self, x: usize, y: usize, ch: char) {
         self.data[y][x] = ch;
     }
     pub fn setp(&mut self, p: Point, ch: char) {
         self.data[p.1][p.0] = ch;
-    }
-    pub fn width(&self) -> usize {
-        self.width
-    }
-    pub fn height(&self) -> usize {
-        self.height
     }
     pub fn info(&self) -> String {
         format!("Canvas size: {}x{}", self.width, self.height)
@@ -58,6 +49,11 @@ impl Point {
 mod tests {
     use super::*;
 
+    impl Canvas {
+        fn get(&self, x: usize, y: usize) -> char {
+            self.data[y][x]
+        }
+    }
     #[test]
     fn canvas_to_string() {
         let c = Canvas::new(4, 2);
@@ -71,8 +67,8 @@ mod tests {
     #[test]
     fn new_matches_size() {
         let c = Canvas::new(5, 3);
-        assert_eq!(5, c.width());
-        assert_eq!(3, c.height());
+        assert_eq!(5, c.width);
+        assert_eq!(3, c.height);
     }
     #[test]
     fn set_matches_the_position() {
