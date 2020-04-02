@@ -38,18 +38,18 @@ Commands
 All commands can be used both in interactive mode or when reading from a file.
 The following commands are supported:
 
-| Command           | Description
-| ----------------- | -------------------------------
-| CHAR ch           | Use `ch` character when drawing
-| CANV width height | Create new canvas with the declared size
-| CIRC x y r        | Draw a circle in point `(x, y)` with radius of the size `r`
-| LINE x1 y1 x2 y2  | Draw a line from point `(x1, y1)` to point `(x2, y2)`
-| RECT x1 y1 x2 y2  | Draw a rectangle from left top on `(x1, y1)` to right bottom on `(x2, y2)`
-| INFO              | Display short info about canvas size
-| SHOW              | Display the drawing on the screen
-| READ filename     | Read and execute instructions from the provided file
-| SAVE filename     | Save ASCII drawing to the provided file
-| QUIT              | Quit program
+| Command                  | Description
+| ------------------------ | -------------------------------
+| CHAR ch                  | Use `ch` character when drawing
+| CANV[AS] width height    | Create new canvas with the declared size
+| CIRC[LE] x y r           | Draw a circle in point `(x, y)` with radius of the size `r`
+| LINE x1 y1 x2 y2         | Draw a line from point `(x1, y1)` to point `(x2, y2)`
+| RECT[ANGLE] x1 y1 x2 y2  | Draw a rectangle from left top on `(x1, y1)` to right bottom on `(x2, y2)`
+| INFO                     | Display short info about canvas size
+| SHOW                     | Display the drawing on the screen
+| READ filename            | Read and execute instructions from the provided file
+| SAVE filename            | Save ASCII drawing to the provided file
+| QUIT                     | Quit program
 
 License
 =======

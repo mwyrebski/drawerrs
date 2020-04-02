@@ -3,9 +3,9 @@ use crate::canvas::Point;
 #[derive(PartialEq, PartialOrd, Eq, Ord, Debug, Hash)]
 pub enum Command {
     Line { from: Point, to: Point },
-    Rect { p1: Point, p2: Point },
-    Circ { p: Point, r: usize },
-    Canv { width: usize, height: usize },
+    Rectangle { p1: Point, p2: Point },
+    Circle { p: Point, r: usize },
+    Canvas { width: usize, height: usize },
     Char(char),
     Read(String),
     Save(String),
@@ -44,26 +44,26 @@ impl Command {
                     to: Point(x2, y2),
                 }
             }
-            ["RECT", x1, y1, x2, y2] => {
+            ["RECT", x1, y1, x2, y2] | ["RECTANGLE", x1, y1, x2, y2] => {
                 let x1 = x1.parse().unwrap();
                 let y1 = y1.parse().unwrap();
                 let x2 = x2.parse().unwrap();
                 let y2 = y2.parse().unwrap();
-                Command::Rect {
+                Command::Rectangle {
                     p1: Point(x1, y1),
                     p2: Point(x2, y2),
                 }
             }
-            ["CIRC", x, y, r] => {
+            ["CIRC", x, y, r] | ["CIRCLE", x, y, r] => {
                 let x = x.parse().unwrap();
                 let y = y.parse().unwrap();
                 let r = r.parse().unwrap();
-                Command::Circ { p: Point(x, y), r }
+                Command::Circle { p: Point(x, y), r }
             }
-            ["CANV", width, height] => {
+            ["CANV", width, height] | ["CANVAS", width, height] => {
                 let width = width.parse().unwrap();
                 let height = height.parse().unwrap();
-                Command::Canv { width, height }
+                Command::Canvas { width, height }
             }
             ["CHAR", ch] => {
                 let ch = ch.parse().unwrap();
@@ -97,33 +97,54 @@ mod tests {
     }
     #[test]
     fn rect_is_parsed() {
-        let expected = Command::Rect {
+        let expected = Command::Rectangle {
             p1: Point(1, 2),
             p2: Point(3, 4),
         };
-        for input in &["rect\t1 2 3 4", "RECT 1 2 3 4", "Rect  1  2  3\t4\n"] {
+        for input in &[
+            "rect\t1 2 3 4",
+            "RECT 1 2 3 4",
+            "Rect  1  2  3\t4\n",
+            "rectangle\t1 2 3 4",
+            "RECTANGLE 1 2 3 4",
+            "Rectangle  1  2  3\t4\n",
+        ] {
             let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
     }
     #[test]
-    fn circ_is_parsed() {
-        let expected = Command::Circ {
+    fn circle_is_parsed() {
+        let expected = Command::Circle {
             p: Point(1, 2),
             r: 3,
         };
-        for input in &["circ\t1 2 3 ", " CIRC 1 2 3 ", "Circ  1  2  \t3\n"] {
+        for input in &[
+            "circ\t1 2 3 ",
+            " CIRC 1 2 3 ",
+            "Circ  1  2  \t3\n",
+            "circle\t1 2 3 ",
+            " CIRCLE 1 2 3 ",
+            "Circle  1  2  \t3\n",
+        ] {
             let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
     }
     #[test]
-    fn canv_is_parsed() {
-        let expected = Command::Canv {
+    fn canvas_is_parsed() {
+        let expected = Command::Canvas {
             width: 100,
             height: 200,
         };
-        for input in &["canv\t100 200 ", " CANV 100 200", "Canv  100  \t200 \n"] {
+        for input in &[
+            "canv\t100 200 ",
+            " CANV 100 200",
+            "Canv  100  \t200 \n",
+            "canvas\t100 200 ",
+            " CANVAS 100 200",
+            "Canvas  100  \t200 \n",
+        ] {
             let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }

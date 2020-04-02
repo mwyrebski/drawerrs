@@ -60,7 +60,7 @@ fn main() -> io::Result<()> {
                         }
                     }
                 }
-                Command::Rect { p1, p2 } => {
+                Command::Rectangle { p1, p2 } => {
                     let Point(x1, y1) = p1;
                     let Point(x2, y2) = p2;
                     for x in x1..=x2 {
@@ -71,7 +71,7 @@ fn main() -> io::Result<()> {
                         }
                     }
                 }
-                Command::Circ { p, r } => {
+                Command::Circle { p, r } => {
                     let Point(x, y) = p;
                     let fr = r as f64;
                     let circle = |x, y| {
@@ -89,7 +89,7 @@ fn main() -> io::Result<()> {
                         }
                     }
                 }
-                Command::Canv { width, height } => {
+                Command::Canvas { width, height } => {
                     canvas = Canvas::new(width, height);
                     println!("New canvas size {}x{}", width, height);
                 }
