@@ -18,15 +18,7 @@ fn main() -> io::Result<()> {
     println!("");
     let mut canvas = Canvas::new(20, 10);
     let mut setchar = '*';
-    let args: Vec<String> = env::args().skip(1).collect();
-    let mut reader: Box<dyn BufRead> = {
-        match (args.get(0), args.get(1)) {
-            (Some(opt), Some(filename)) if opt == "-r" => {
-                Box::new(BufReader::new(fs::File::open(filename).unwrap()))
-            }
-            _ => Box::new(BufReader::new(io::stdin())),
-        }
-    };
+    let mut reader = open_input_reader();
 
     loop {
         print!("> ");
@@ -115,4 +107,14 @@ fn main() -> io::Result<()> {
         }
     }
     Ok(())
+}
+
+fn open_input_reader() -> Box<dyn BufRead> {
+    let args: Vec<String> = env::args().skip(1).collect();
+    match (args.get(0), args.get(1)) {
+        (Some(opt), Some(filename)) if opt == "-r" => {
+            Box::new(BufReader::new(fs::File::open(filename).unwrap()))
+        }
+        _ => Box::new(BufReader::new(io::stdin())),
+    }
 }
