@@ -84,14 +84,34 @@ impl Command {
 mod tests {
     use super::*;
 
+    fn command_variations(input: &str) -> Vec<String> {
+        let capitalize = |s: &str| {
+            let mut c = s.chars();
+            c.next().unwrap().to_uppercase().chain(c).collect()
+        };
+
+        let mut vec: Vec<String> = Vec::new();
+        for s in &[
+            input.to_ascii_lowercase(),
+            input.to_ascii_uppercase(),
+            capitalize(input),
+        ] {
+            vec.push(s.clone());
+            vec.push(format!(" {} ", s.clone()));
+            vec.push(format!("\t{}\t\n", s.clone()));
+            vec.push(s.split_whitespace().collect::<Vec<&str>>().join("\t"));
+        }
+        vec
+    }
+
     #[test]
     fn line_is_parsed() {
         let expected = Command::Line {
             from: Point(1, 2),
             to: Point(3, 4),
         };
-        for input in &["line\t1 2 3 4", "LINE 1 2 3 4", "Line  1  2  3\t4\n"] {
-            let cmd = Command::from(input.to_string()).unwrap();
+        for input in command_variations("line 1 2 3 4") {
+            let cmd = Command::from(input).unwrap();
             assert_eq!(expected, cmd);
         }
     }
@@ -101,14 +121,13 @@ mod tests {
             p1: Point(1, 2),
             p2: Point(3, 4),
         };
-        for input in &[
-            "rect\t1 2 3 4",
-            "RECT 1 2 3 4",
-            "Rect  1  2  3\t4\n",
-            "rectangle\t1 2 3 4",
-            "RECTANGLE 1 2 3 4",
-            "Rectangle  1  2  3\t4\n",
-        ] {
+
+        for input in [
+            &command_variations("rect 1 2 3 4")[..],
+            &command_variations("rectangle 1 2 3 4")[..],
+        ]
+        .concat()
+        {
             let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
@@ -119,14 +138,12 @@ mod tests {
             p: Point(1, 2),
             r: 3,
         };
-        for input in &[
-            "circ\t1 2 3 ",
-            " CIRC 1 2 3 ",
-            "Circ  1  2  \t3\n",
-            "circle\t1 2 3 ",
-            " CIRCLE 1 2 3 ",
-            "Circle  1  2  \t3\n",
-        ] {
+        for input in [
+            &command_variations("circ 1 2 3")[..],
+            &command_variations("circle 1 2 3")[..],
+        ]
+        .concat()
+        {
             let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
@@ -137,14 +154,12 @@ mod tests {
             width: 100,
             height: 200,
         };
-        for input in &[
-            "canv\t100 200 ",
-            " CANV 100 200",
-            "Canv  100  \t200 \n",
-            "canvas\t100 200 ",
-            " CANVAS 100 200",
-            "Canvas  100  \t200 \n",
-        ] {
+        for input in [
+            &command_variations("canv 100 200")[..],
+            &command_variations("canvas 100 200")[..],
+        ]
+        .concat()
+        {
             let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
@@ -152,7 +167,7 @@ mod tests {
     #[test]
     fn char_is_parsed() {
         let expected = Command::Char('*');
-        for input in &["char\t* ", " CHAR *", "Char \t* \n"] {
+        for input in command_variations("char *") {
             let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
         }
@@ -183,7 +198,7 @@ mod tests {
     }
     #[test]
     fn info_is_parsed() {
-        for input in &["info", " \nINFO ", "  Info\t\n"] {
+        for input in command_variations("info") {
             let expected = Command::Info;
             let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
@@ -191,7 +206,7 @@ mod tests {
     }
     #[test]
     fn show_is_parsed() {
-        for input in &["show", " \nSHOW ", "  Show\t\n"] {
+        for input in command_variations("show") {
             let expected = Command::Show;
             let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
@@ -199,7 +214,7 @@ mod tests {
     }
     #[test]
     fn quit_is_parsed() {
-        for input in &["quit", " \tQUIT ", "  Quit\t\n"] {
+        for input in command_variations("quit") {
             let expected = Command::Quit;
             let cmd = Command::from(input.to_string()).unwrap();
             assert_eq!(expected, cmd);
