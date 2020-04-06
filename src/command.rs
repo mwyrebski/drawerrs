@@ -37,41 +37,23 @@ impl Command {
             return Err("empty input".to_string());
         }
         let cmd = match split.as_slice() {
-            ["LINE", x1, y1, x2, y2] => {
-                let x1 = try_parse_usize(x1)?;
-                let y1 = try_parse_usize(y1)?;
-                let x2 = try_parse_usize(x2)?;
-                let y2 = try_parse_usize(y2)?;
-                Command::Line {
-                    from: Point(x1, y1),
-                    to: Point(x2, y2),
-                }
-            }
-            ["RECT", x1, y1, x2, y2] | ["RECTANGLE", x1, y1, x2, y2] => {
-                let x1 = try_parse_usize(x1)?;
-                let y1 = try_parse_usize(y1)?;
-                let x2 = try_parse_usize(x2)?;
-                let y2 = try_parse_usize(y2)?;
-                Command::Rectangle {
-                    p1: Point(x1, y1),
-                    p2: Point(x2, y2),
-                }
-            }
-            ["CIRC", x, y, r] | ["CIRCLE", x, y, r] => {
-                let x = try_parse_usize(x)?;
-                let y = try_parse_usize(y)?;
-                let r = try_parse_usize(r)?;
-                Command::Circle { p: Point(x, y), r }
-            }
-            ["CANV", width, height] | ["CANVAS", width, height] => {
-                let width = try_parse_usize(width)?;
-                let height = try_parse_usize(height)?;
-                Command::Canvas { width, height }
-            }
-            ["CHAR", ch] => {
-                let ch = ch.parse::<char>().map_err(|e| e.to_string())?;
-                Command::Char(ch)
-            }
+            ["LINE", x1, y1, x2, y2] => Command::Line {
+                from: Point(try_parse_usize(x1)?, try_parse_usize(y1)?),
+                to: Point(try_parse_usize(x2)?, try_parse_usize(y2)?),
+            },
+            ["RECT", x1, y1, x2, y2] | ["RECTANGLE", x1, y1, x2, y2] => Command::Rectangle {
+                p1: Point(try_parse_usize(x1)?, try_parse_usize(y1)?),
+                p2: Point(try_parse_usize(x2)?, try_parse_usize(y2)?),
+            },
+            ["CIRC", x, y, r] | ["CIRCLE", x, y, r] => Command::Circle {
+                p: Point(try_parse_usize(x)?, try_parse_usize(y)?),
+                r: try_parse_usize(r)?,
+            },
+            ["CANV", width, height] | ["CANVAS", width, height] => Command::Canvas {
+                width: try_parse_usize(width)?,
+                height: try_parse_usize(height)?,
+            },
+            ["CHAR", ch] => Command::Char(ch.parse::<char>().map_err(|e| e.to_string())?),
             ["READ", filename] => Command::Read(filename.to_string()),
             ["SAVE", filename] => Command::Save(filename.to_string()),
             ["INFO"] => Command::Info,
