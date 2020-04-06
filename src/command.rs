@@ -14,9 +14,12 @@ pub enum Command {
     Quit,
 }
 
+fn try_parse_usize(s: &str) -> Result<usize, String> {
+    s.parse::<usize>().map_err(|e| e.to_string())
+}
+
 impl Command {
     pub fn from(input: String) -> Result<Command, String> {
-        let arg_err = || String::default();
         let split: Vec<String> = input
             .trim()
             .split_whitespace()
@@ -31,42 +34,42 @@ impl Command {
             .collect();
         let split: Vec<&str> = split.iter().map(String::as_ref).collect();
         if split.is_empty() {
-            return Err(arg_err());
+            return Err("empty input".to_string());
         }
         let cmd = match split.as_slice() {
             ["LINE", x1, y1, x2, y2] => {
-                let x1 = x1.parse().unwrap();
-                let y1 = y1.parse().unwrap();
-                let x2 = x2.parse().unwrap();
-                let y2 = y2.parse().unwrap();
+                let x1 = try_parse_usize(x1)?;
+                let y1 = try_parse_usize(y1)?;
+                let x2 = try_parse_usize(x2)?;
+                let y2 = try_parse_usize(y2)?;
                 Command::Line {
                     from: Point(x1, y1),
                     to: Point(x2, y2),
                 }
             }
             ["RECT", x1, y1, x2, y2] | ["RECTANGLE", x1, y1, x2, y2] => {
-                let x1 = x1.parse().unwrap();
-                let y1 = y1.parse().unwrap();
-                let x2 = x2.parse().unwrap();
-                let y2 = y2.parse().unwrap();
+                let x1 = try_parse_usize(x1)?;
+                let y1 = try_parse_usize(y1)?;
+                let x2 = try_parse_usize(x2)?;
+                let y2 = try_parse_usize(y2)?;
                 Command::Rectangle {
                     p1: Point(x1, y1),
                     p2: Point(x2, y2),
                 }
             }
             ["CIRC", x, y, r] | ["CIRCLE", x, y, r] => {
-                let x = x.parse().unwrap();
-                let y = y.parse().unwrap();
-                let r = r.parse().unwrap();
+                let x = try_parse_usize(x)?;
+                let y = try_parse_usize(y)?;
+                let r = try_parse_usize(r)?;
                 Command::Circle { p: Point(x, y), r }
             }
             ["CANV", width, height] | ["CANVAS", width, height] => {
-                let width = width.parse().unwrap();
-                let height = height.parse().unwrap();
+                let width = try_parse_usize(width)?;
+                let height = try_parse_usize(height)?;
                 Command::Canvas { width, height }
             }
             ["CHAR", ch] => {
-                let ch = ch.parse().unwrap();
+                let ch = ch.parse::<char>().map_err(|e| e.to_string())?;
                 Command::Char(ch)
             }
             ["READ", filename] => Command::Read(filename.to_string()),
@@ -74,7 +77,7 @@ impl Command {
             ["INFO"] => Command::Info,
             ["SHOW"] => Command::Show,
             ["QUIT"] => Command::Quit,
-            _ => return Err(arg_err()),
+            _ => return Err("unknown command".to_string()),
         };
         Ok(cmd)
     }

@@ -31,8 +31,8 @@ fn main() -> io::Result<()> {
             break;
         }
 
-        if let Ok(cmd) = Command::from(line) {
-            match cmd {
+        match Command::from(line) {
+            Ok(cmd) => match cmd {
                 Command::Line { from, to } => {
                     let Point(x1, y1) = from;
                     let Point(x2, y2) = to;
@@ -101,9 +101,8 @@ fn main() -> io::Result<()> {
                     println!("Quitting...");
                     break;
                 }
-            }
-        } else {
-            println!("Invalid command.");
+            },
+            Err(e) => println!("Error: {}", e),
         }
     }
     Ok(())
